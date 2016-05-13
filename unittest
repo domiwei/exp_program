@@ -1,0 +1,12 @@
+        http = "HTTP/1.1 200 OK\r\nContent-Length: 1052706\r\n"
+		"X-Object-Meta-Enc: 123\r\nX-Object-Meta-Comp: 321\r\n"
+		"X-Object-Meta-Nonce: 11111111111111111111122222222222\r\n\r\n"
+		"<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">"
+		"<html><head><title>503 Service Unavailable</title>"
+		"</head><body>"
+		"<h1>Service Unavailable</h1>"
+		"<p>The server is temporarily unable to service your"
+		"request due to maintenance downtime or capacity"
+		"problems. Please try again later.</p>"
+		"</body></html>";
+
