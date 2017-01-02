@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
         /* initialize custom header list (stating that Expect: 100-continue is not
            wanted */ 
         headerlist = curl_slist_append(headerlist, buf);
-        headerlist = curl_slist_append(headerlist, "Authorization: Bearer ya29.CjDHA_pr0agzkU3THzqFv1sZRf2LjbxPa4EL6QI-v5r3jXLEVfNYVGWrkt9V_Wz-TjM");
+        headerlist = curl_slist_append(headerlist, "Authorization: Bearer ya29.CjDHAzCHlg0vlQNOlXfcrbGjL4-iJ1oLt-BrgSZ-LNdqv3Bn8IbJ9HVDd4HFbZZ7DHk");
         headerlist = curl_slist_append(headerlist, "Content-Type:multipart/related; boundary=aabbccdd");
                 if(curl) {
                         /* what URL that receives this POST */ 

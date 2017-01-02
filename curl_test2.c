@@ -21,6 +21,7 @@ size_t myread(char *buffer, size_t size, size_t nitems, void *instream)
         fread(buffer, 1, actual_read, ptr->fptr);
         ptr->remaining -= actual_read;
 
+        printf("%s", buffer);
         return actual_read;
 }
 
@@ -56,24 +57,25 @@ int main(int argc, char *argv[])
 
 
         /* Fill in the submit field too, even if this is rarely needed */ 
-        curl_formadd(&formpost,
-                        &lastptr,
-                        CURLFORM_COPYNAME, "Content-Type: text/plain; charset=UTF-8",
+       // curl_formadd(&formpost,
+        //                &lastptr,
+  //                      CURLFORM_COPYNAME, "Content-Type: text/plain; charset=UTF-8",
+    //                    CURLFORM_FILE, "testfile",
                         //CURLFORM_COPYNAME, "submit",
-                        CURLFORM_STREAM, &callback_data,
-                        CURLFORM_CONTENTLEN, (long) size,
-                        CURLFORM_END);
+                        //CURLFORM_STREAM, &callback_data,
+  //                      CURLFORM_CONTENTLEN, (long) size,
+      //                  CURLFORM_END);
 
         curl = curl_easy_init();
         /* initialize custom header list (stating that Expect: 100-continue is not
            wanted */ 
         headerlist = curl_slist_append(headerlist, buf);
-        headerlist = curl_slist_append(headerlist, "Authorization: Bearer ya29.CjDHA_pr0agzkU3THzqFv1sZRf2LjbxPa4EL6QI-v5r3jXLEVfNYVGWrkt9V_Wz-TjM");
-        headerlist = curl_slist_append(headerlist, "Content-Type:multipart/form-data; boundary=aabbccdd");
+        headerlist = curl_slist_append(headerlist, "Authorization: Bearer ya29.CjDHAzCHlg0vlQNOlXfcrbGjL4-iJ1oLt-BrgSZ-LNdqv3Bn8IbJ9HVDd4HFbZZ7DHk");
+        //headerlist = curl_slist_append(headerlist, "Content-Type:multipart/form-data; boundary=aabbccdd");
                 if(curl) {
                         /* what URL that receives this POST */ 
                         curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/upload/drive/v2/files?uploadType=multipart");
-                        curl_easy_setopt(curl, CURLOPT_READFUNCTION, myread);
+                      //  curl_easy_setopt(curl, CURLOPT_READFUNCTION, myread);
                         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
                         curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
 
