@@ -34,9 +34,10 @@ int main(int argc, char *argv[])
         struct curl_httppost *lastptr=NULL;
         struct curl_slist *headerlist=NULL;
         static const char buf[] = "Expect:";
-        FILE *fptr;
+        FILE *fptr, *temp_fptr;
         read_control callback_data;
         long long size;
+	char *json_buffer = "{\"title\": \"2017test\"}";
 
         fptr = fopen("testfile", "r");
         fseek(fptr, 0, SEEK_END);
@@ -45,55 +46,62 @@ int main(int argc, char *argv[])
         callback_data.remaining = size;
         fseek(fptr, 0, SEEK_SET);
 
+        temp_fptr = fopen("header", "w+");
 
         curl_global_init(CURL_GLOBAL_ALL);
 
         /* Fill in the filename field */ 
-        curl_formadd(&formpost,
-                        &lastptr,
-                        CURLFORM_COPYNAME, "Content-Type: application/json; charset=UTF-8",
-                        CURLFORM_COPYCONTENTS, "{\"title\": \"2017test\"}",
-                        CURLFORM_END);
+	curl_formadd(&formpost,
+			&lastptr,
+			//CURLFORM_CONTENTTYPE, "Content-Type: application/json; charset=UTF-8",
+			CURLFORM_CONTENTTYPE, "application/json",
+			//CURLFORM_COPYCONTENTS, "{\"title\": \"2017test\"}",
+			CURLFORM_BUFFERPTR, json_buffer,
+			CURLFORM_BUFFERLENGTH, strlen(json_buffer),
+			CURLFORM_END);
 
 
         /* Fill in the submit field too, even if this is rarely needed */ 
-       // curl_formadd(&formpost,
-        //                &lastptr,
-  //                      CURLFORM_COPYNAME, "Content-Type: text/plain; charset=UTF-8",
-    //                    CURLFORM_FILE, "testfile",
+        curl_formadd(&formpost,
+                        &lastptr,
+                        //CURLFORM_CONTENTTYPE, "Content-Type: text/plain; charset=UTF-8",
+             //           CURLFORM_CONTENTTYPE, "text/plain",
+                        //CURLFORM_FILENAME, "testfile",
                         //CURLFORM_COPYNAME, "submit",
-                        //CURLFORM_STREAM, &callback_data,
-  //                      CURLFORM_CONTENTLEN, (long) size,
-      //                  CURLFORM_END);
+                        CURLFORM_STREAM, &callback_data,
+                        CURLFORM_CONTENTSLENGTH, (long) size,
+                        CURLFORM_END);
 
         curl = curl_easy_init();
         /* initialize custom header list (stating that Expect: 100-continue is not
            wanted */ 
         headerlist = curl_slist_append(headerlist, buf);
-        headerlist = curl_slist_append(headerlist, "Authorization: Bearer ya29.CjDHAzCHlg0vlQNOlXfcrbGjL4-iJ1oLt-BrgSZ-LNdqv3Bn8IbJ9HVDd4HFbZZ7DHk");
-        //headerlist = curl_slist_append(headerlist, "Content-Type:multipart/form-data; boundary=aabbccdd");
-                if(curl) {
-                        /* what URL that receives this POST */ 
-                        curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/upload/drive/v2/files?uploadType=multipart");
-                      //  curl_easy_setopt(curl, CURLOPT_READFUNCTION, myread);
-                        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
-                        curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+        headerlist = curl_slist_append(headerlist, "Authorization: Bearer ya29.CjDIA0S7ahXfeouWpIXS8v0PId8bTY1J8LuVDz4_g7bCsu_10EUQJ7_4tGGhkm4w8TU");
+        //headerlist = curl_slist_append(headerlist, "Content-Type: multipart/related; boundary=test");
+	if(curl) {
+		/* what URL that receives this POST */ 
+		curl_easy_setopt(curl, CURLOPT_URL, "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart");
+		curl_easy_setopt(curl, CURLOPT_READFUNCTION, myread);
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
+		curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
+		curl_easy_setopt(curl, CURLOPT_WRITEHEADER, temp_fptr);
 
-                        /* Perform the request, res will get the return code */ 
-                        res = curl_easy_perform(curl);
-                        /* Check for errors */ 
-                        if(res != CURLE_OK)
-                                fprintf(stderr, "curl_easy_perform() failed: %s\n",
-                                                curl_easy_strerror(res));
+		/* Perform the request, res will get the return code */ 
+		res = curl_easy_perform(curl);
+		/* Check for errors */ 
+		if(res != CURLE_OK)
+			fprintf(stderr, "curl_easy_perform() failed: %s\n",
+					curl_easy_strerror(res));
 
-                        /* always cleanup */ 
-                        curl_easy_cleanup(curl);
+		/* always cleanup */ 
+		curl_easy_cleanup(curl);
 
-                        /* then cleanup the formpost chain */ 
-                        curl_formfree(formpost);
-                        /* free slist */ 
-                        curl_slist_free_all(headerlist);
-                }
-        return 0;
+		/* then cleanup the formpost chain */ 
+		curl_formfree(formpost);
+		/* free slist */ 
+		curl_slist_free_all(headerlist);
+	}
+	fclose(temp_fptr);
+	return 0;
 }
 
